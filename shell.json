@@ -1,18 +1,19 @@
 {
   "summary": {
-    "title": "Shell Injection Threat Model – E-commerce",
+    "title": "Shell Injection Threat Model – E-commerce Platform",
     "owner": "Cassandra Gnaere",
-    "description": "Threat model demonstrating OS Command Injection (Shell Injection) in an e-commerce backend using STRIDE.",
+    "description": "STRIDE threat model demonstrating OS command injection risks in an e-commerce backend.",
     "id": 0
   },
   "detail": {
     "contributors": [
-      { "name": "Cassandra Gnaere" }
+      {
+        "name": "Cassandra Gnaere"
+      }
     ],
     "diagrams": [
       {
         "title": "Shell Injection Data Flow",
-        "thumbnail": "./public/content/images/thumbnail.stride.jpg",
         "diagramType": "STRIDE",
         "id": 0,
         "diagramJson": {
@@ -20,238 +21,157 @@
             {
               "type": "tm.Actor",
               "size": { "width": 160, "height": 80 },
-              "position": { "x": 40, "y": 60 },
-              "angle": 0,
+              "position": { "x": 40, "y": 40 },
               "id": "actor-user",
-              "z": 1,
-              "threats": [],
-              "outOfScope": false,
-              "hasOpenThreats": false,
               "attrs": {
-                ".element-shape": { "class": "element-shape hasNoOpenThreats isInScope" },
-                ".element-text": { "class": "element-text hasNoOpenThreats isInScope" },
                 "text": { "text": "User / Browser" }
               }
             },
-
             {
               "type": "tm.Process",
               "size": { "width": 140, "height": 110 },
-              "position": { "x": 280, "y": 150 },
-              "angle": 0,
+              "position": { "x": 260, "y": 160 },
               "id": "process-webapp",
-              "z": 2,
-              "privilegeLevel": "executionContext =Limited",
-              "outOfScope": false,
-              "hasOpenThreats": true,
+              "privilegeLevel": "executionContext=Application",
               "threats": [
                 {
                   "status": "Open",
                   "severity": "High",
-                  "title": "Untrusted input reaches command construction",
+                  "title": "Shell Injection via User Input",
                   "type": "Tampering",
-                  "description": "The web app builds OS commands from user input (e.g., filename/orderId), enabling injection of separators and metacharacters.",
-                  "mitigation": "Do not build command strings from user input. Use safe APIs (e.g., subprocess.run with an argument list and shell=False) and strict allowlist validation."
+                  "description": "User input is concatenated into an OS command without validation, enabling command injection.",
+                  "mitigation": "Avoid os.system(); use subprocess.run() without shell=True and validate all input."
                 },
                 {
                   "status": "Open",
                   "severity": "Medium",
-                  "title": "Insufficient logging for command execution attempts",
+                  "title": "Lack of Audit Logging",
                   "type": "Repudiation",
-                  "description": "If command execution attempts are not logged with request identifiers, malicious activity may not be traceable.",
-                  "mitigation": "Log security-relevant events (failed validation, blocked payloads) with timestamps and request IDs. Avoid logging sensitive data."
+                  "description": "Injected commands may execute without being logged, preventing accountability.",
+                  "mitigation": "Log all command execution attempts with user context."
                 }
               ],
               "attrs": {
-                ".element-shape": { "class": "element-shape hasOpenThreats isInScope" },
-                ".element-text": { "class": "element-text hasOpenThreats isInScope" },
                 "text": { "text": "E-commerce Web Application" }
               }
             },
-
             {
               "type": "tm.Process",
-              "size": { "width": 150, "height": 110 },
-              "position": { "x": 560, "y": 150 },
-              "angle": 0,
+              "size": { "width": 140, "height": 110 },
+              "position": { "x": 540, "y": 160 },
               "id": "process-shell",
-              "z": 3,
-              "privilegeLevel": "executionContext =Limited",
-              "outOfScope": false,
-              "hasOpenThreats": true,
+              "privilegeLevel": "executionContext=OS",
               "threats": [
                 {
                   "status": "Open",
                   "severity": "High",
-                  "title": "Arbitrary command execution",
+                  "title": "Arbitrary Command Execution",
                   "type": "Elevation of privilege",
-                  "description": "Injected commands run with the privileges of the application/service account.",
-                  "mitigation": "Run the service using least privilege. Remove shell execution where possible. Apply OS hardening and allow only required commands."
+                  "description": "Injected commands execute with application-level OS privileges.",
+                  "mitigation": "Apply least-privilege execution and disable unnecessary shell access."
                 },
                 {
                   "status": "Open",
                   "severity": "High",
-                  "title": "Sensitive file access via injected commands",
+                  "title": "Sensitive File Disclosure",
                   "type": "Information disclosure",
-                  "description": "Injected commands may read configuration files, environment secrets, or system files and leak them to the attacker.",
-                  "mitigation": "Restrict file permissions, store secrets securely, and prevent shell invocation. Segment access to sensitive directories."
+                  "description": "Attackers may read system or configuration files using injected commands.",
+                  "mitigation": "Restrict file permissions and isolate execution environment."
                 },
                 {
                   "status": "Open",
                   "severity": "Medium",
-                  "title": "Service disruption through destructive commands",
+                  "title": "System Resource Abuse",
                   "type": "Denial of service",
-                  "description": "Injected commands may delete directories, consume resources, or stop essential services.",
-                  "mitigation": "Input validation + shell removal, rate limiting, monitoring/alerts, and safe recovery (backups/immutable deploys)."
+                  "description": "Injected commands may delete files or consume system resources.",
+                  "mitigation": "Apply resource limits and input validation."
                 }
               ],
               "attrs": {
-                ".element-shape": { "class": "element-shape hasOpenThreats isInScope" },
-                ".element-text": { "class": "element-text hasOpenThreats isInScope" },
                 "text": { "text": "Operating System / Shell" }
               }
             },
-
             {
               "type": "tm.Store",
-              "size": { "width": 180, "height": 90 },
-              "position": { "x": 565, "y": 340 },
-              "angle": 0,
+              "size": { "width": 160, "height": 80 },
+              "position": { "x": 540, "y": 340 },
               "id": "store-files",
-              "z": 4,
-              "outOfScope": false,
-              "hasOpenThreats": true,
               "threats": [
                 {
                   "status": "Open",
                   "severity": "High",
-                  "title": "Unauthorized file modification/deletion",
-                  "type": "Tampering",
-                  "description": "Command injection can be used to modify or delete application files, logs, or uploaded content.",
-                  "mitigation": "Enforce least-privilege filesystem permissions, separate writable directories, and use integrity monitoring."
+                  "title": "Unauthorized File Access",
+                  "type": "Information disclosure",
+                  "description": "Injected commands may read or modify sensitive files.",
+                  "mitigation": "Apply strict filesystem permissions."
                 }
               ],
               "attrs": {
-                ".element-shape": { "class": "element-shape hasOpenThreats isInScope" },
-                ".element-text": { "class": "element-text hasOpenThreats isInScope" },
                 "text": { "text": "File System" }
               }
             },
-
             {
               "type": "tm.Flow",
-              "size": { "width": 10, "height": 10 },
-              "smooth": true,
               "source": { "id": "actor-user" },
               "target": { "id": "process-webapp" },
-              "id": "flow-user-webapp",
-              "z": 5,
               "labels": [
-                { "position": 0.5, "attrs": { "text": { "text": "Web Request (input: orderId / filename)" } } }
-              ],
-              "isPublicNetwork": true,
-              "isEncrypted": true,
-              "protocol": "HTTP/S",
-              "outOfScope": false,
-              "hasOpenThreats": true,
-              "threats": [
                 {
-                  "status": "Open",
-                  "severity": "Medium",
-                  "title": "Input tampering in request parameters",
-                  "type": "Tampering",
-                  "description": "Attacker manipulates request parameters to include separators/metacharacters intended for command execution.",
-                  "mitigation": "Strict server-side allowlist validation and rejection of unsafe characters; use structured APIs rather than shell."
+                  "position": 0.5,
+                  "attrs": {
+                    "text": { "text": "HTTP Request (orderId / filename)" }
+                  }
                 }
               ],
-              "attrs": {
-                ".marker-target": { "class": "marker-target hasOpenThreats isInScope" },
-                ".connection": { "class": "connection hasOpenThreats isInScope" }
-              }
+              "id": "flow-user-webapp"
             },
-
             {
               "type": "tm.Flow",
-              "size": { "width": 10, "height": 10 },
-              "smooth": true,
               "source": { "id": "process-webapp" },
               "target": { "id": "process-shell" },
-              "id": "flow-webapp-shell",
-              "z": 6,
               "labels": [
-                { "position": 0.5, "attrs": { "text": { "text": "OS Command Execution (unsafe call)" } } }
-              ],
-              "outOfScope": false,
-              "hasOpenThreats": true,
-              "threats": [
                 {
-                  "status": "Open",
-                  "severity": "High",
-                  "title": "Command injection at OS boundary",
-                  "type": "Elevation of privilege",
-                  "description": "If the application passes a constructed command string to the OS/shell, injected payloads can execute arbitrary commands.",
-                  "mitigation": "Remove shell usage. Use subprocess with argument arrays and shell=False; apply allowlist validation and least privilege."
+                  "position": 0.5,
+                  "attrs": {
+                    "text": { "text": "OS Command Execution" }
+                  }
                 }
               ],
-              "attrs": {
-                ".marker-target": { "class": "marker-target hasOpenThreats isInScope" },
-                ".connection": { "class": "connection hasOpenThreats isInScope" }
-              }
+              "id": "flow-webapp-shell"
             },
-
             {
               "type": "tm.Flow",
-              "size": { "width": 10, "height": 10 },
-              "smooth": true,
               "source": { "id": "process-shell" },
               "target": { "id": "store-files" },
-              "id": "flow-shell-files",
-              "z": 7,
               "labels": [
-                { "position": 0.5, "attrs": { "text": { "text": "File Operations (read/write/delete)" } } }
-              ],
-              "outOfScope": false,
-              "hasOpenThreats": true,
-              "threats": [
                 {
-                  "status": "Open",
-                  "severity": "High",
-                  "title": "Unauthorized file access or deletion",
-                  "type": "Tampering",
-                  "description": "Injected commands can read, modify, or delete files beyond the intended scope.",
-                  "mitigation": "Lock down permissions, separate sensitive files, and restrict what the service account can access."
+                  "position": 0.5,
+                  "attrs": {
+                    "text": { "text": "File Read / Write / Delete" }
+                  }
                 }
               ],
-              "attrs": {
-                ".marker-target": { "class": "marker-target hasOpenThreats isInScope" },
-                ".connection": { "class": "connection hasOpenThreats isInScope" }
-              }
+              "id": "flow-shell-files"
             },
-
             {
               "type": "tm.Boundary",
-              "size": { "width": 10, "height": 10 },
               "smooth": true,
-              "source": { "x": 215, "y": 40 },
-              "target": { "x": 215, "y": 430 },
-              "id": "trust-boundary-user-app",
-              "z": 8,
-              "attrs": {}
+              "source": { "x": 210, "y": 20 },
+              "target": { "x": 210, "y": 420 },
+              "id": "boundary-user-app"
             },
-
             {
               "type": "tm.Boundary",
-              "size": { "width": 10, "height": 10 },
               "smooth": true,
-              "source": { "x": 505, "y": 90 },
-              "target": { "x": 505, "y": 420 },
-              "id": "trust-boundary-app-os",
-              "z": 9,
-              "attrs": {}
+              "source": { "x": 480, "y": 20 },
+              "target": { "x": 480, "y": 420 },
+              "id": "boundary-app-os"
             }
           ]
         },
-        "size": { "width": 900, "height": 520 }
+        "size": {
+          "width": 900,
+          "height": 520
+        }
       }
     ]
   }
