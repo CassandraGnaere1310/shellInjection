@@ -1,19 +1,18 @@
 {
   "summary": {
-    "title": "Shell Injection Threat Model – E-commerce Platform",
+    "title": "Shell Injection Threat Model (E-commerce)",
     "owner": "Cassandra Gnaere",
-    "description": "STRIDE threat model demonstrating OS command injection risks in an e-commerce backend.",
+    "description": "Threat model of an e-commerce web app where untrusted user input can reach OS command execution (shell injection). Includes DB, logs, file system, and background worker.",
     "id": 0
   },
   "detail": {
     "contributors": [
-      {
-        "name": "Cassandra Gnaere"
-      }
+      { "name": "Cassandra Gnaere" }
     ],
     "diagrams": [
       {
-        "title": "Shell Injection Data Flow",
+        "title": "E-commerce Request + Admin Maintenance Flow",
+        "thumbnail": "./public/content/images/thumbnail.stride.jpg",
         "diagramType": "STRIDE",
         "id": 0,
         "diagramJson": {
@@ -21,158 +20,305 @@
             {
               "type": "tm.Actor",
               "size": { "width": 160, "height": 80 },
-              "position": { "x": 40, "y": 40 },
-              "id": "actor-user",
-              "attrs": {
-                "text": { "text": "User / Browser" }
-              }
+              "position": { "x": 30, "y": 40 },
+              "angle": 0,
+              "id": "c6f50b22-93af-4db5-9c32-8e21b75a0f01",
+              "z": 1,
+              "threats": [],
+              "outOfScope": false,
+              "hasOpenThreats": false,
+              "attrs": { "text": { "text": "Customer Browser" } }
             },
             {
               "type": "tm.Process",
-              "size": { "width": 140, "height": 110 },
-              "position": { "x": 260, "y": 160 },
-              "id": "process-webapp",
-              "privilegeLevel": "executionContext=Application",
+              "size": { "width": 110, "height": 110 },
+              "position": { "x": 240, "y": 140 },
+              "angle": 0,
+              "id": "4a7d1a5f-5a0a-4df5-9b3b-0dca1efb72c7",
+              "z": 2,
+              "privilegeLevel": "executionContext =Limited",
+              "outOfScope": false,
+              "hasOpenThreats": true,
               "threats": [
                 {
                   "status": "Open",
                   "severity": "High",
-                  "title": "Shell Injection via User Input",
+                  "title": "Shell injection via untrusted input",
                   "type": "Tampering",
-                  "description": "User input is concatenated into an OS command without validation, enabling command injection.",
-                  "mitigation": "Avoid os.system(); use subprocess.run() without shell=True and validate all input."
+                  "description": "Untrusted input (e.g., orderId/filename) is used to build an OS command. Attackers may inject separators/metacharacters to alter command behavior.",
+                  "mitigation": "Avoid shell execution (no os.system / no shell=True). Use safe APIs, allowlist validation, and parameterized arguments. Log and reject unexpected characters."
                 },
                 {
                   "status": "Open",
                   "severity": "Medium",
-                  "title": "Lack of Audit Logging",
+                  "title": "Insufficient request logging",
                   "type": "Repudiation",
-                  "description": "Injected commands may execute without being logged, preventing accountability.",
-                  "mitigation": "Log all command execution attempts with user context."
+                  "description": "If requests and admin actions are not logged with timestamps and user identity, attackers can deny actions or hide traces.",
+                  "mitigation": "Enable structured audit logging for privileged actions and suspicious inputs; protect logs from modification."
                 }
               ],
-              "attrs": {
-                "text": { "text": "E-commerce Web Application" }
-              }
-            },
-            {
-              "type": "tm.Process",
-              "size": { "width": 140, "height": 110 },
-              "position": { "x": 540, "y": 160 },
-              "id": "process-shell",
-              "privilegeLevel": "executionContext=OS",
-              "threats": [
-                {
-                  "status": "Open",
-                  "severity": "High",
-                  "title": "Arbitrary Command Execution",
-                  "type": "Elevation of privilege",
-                  "description": "Injected commands execute with application-level OS privileges.",
-                  "mitigation": "Apply least-privilege execution and disable unnecessary shell access."
-                },
-                {
-                  "status": "Open",
-                  "severity": "High",
-                  "title": "Sensitive File Disclosure",
-                  "type": "Information disclosure",
-                  "description": "Attackers may read system or configuration files using injected commands.",
-                  "mitigation": "Restrict file permissions and isolate execution environment."
-                },
-                {
-                  "status": "Open",
-                  "severity": "Medium",
-                  "title": "System Resource Abuse",
-                  "type": "Denial of service",
-                  "description": "Injected commands may delete files or consume system resources.",
-                  "mitigation": "Apply resource limits and input validation."
-                }
-              ],
-              "attrs": {
-                "text": { "text": "Operating System / Shell" }
-              }
+              "attrs": { "text": { "text": "E-commerce Web App\n(API + Admin Panel)" } }
             },
             {
               "type": "tm.Store",
               "size": { "width": 160, "height": 80 },
-              "position": { "x": 540, "y": 340 },
-              "id": "store-files",
+              "position": { "x": 80, "y": 360 },
+              "angle": 0,
+              "id": "3bd17f3c-f0a2-4c35-a2a9-0d12a1cf9f7c",
+              "z": 3,
+              "isALog": true,
+              "outOfScope": false,
+              "hasOpenThreats": true,
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Log tampering / deletion",
+                  "type": "Tampering",
+                  "description": "If attackers gain command execution, they may delete or modify logs to hide activity.",
+                  "mitigation": "Write logs to append-only storage, restrict permissions, and forward logs to a separate log server/SIEM."
+                }
+              ],
+              "attrs": { "text": { "text": "Application Logs" } }
+            },
+            {
+              "type": "tm.Store",
+              "size": { "width": 160, "height": 80 },
+              "position": { "x": 360, "y": 360 },
+              "angle": 0,
+              "id": "d4f0dfb8-9d2e-4b87-8b9c-9a2b6d8fdce0",
+              "z": 4,
+              "outOfScope": false,
+              "hasOpenThreats": true,
               "threats": [
                 {
                   "status": "Open",
                   "severity": "High",
-                  "title": "Unauthorized File Access",
+                  "title": "Unauthorized access to customer/order data",
                   "type": "Information disclosure",
-                  "description": "Injected commands may read or modify sensitive files.",
-                  "mitigation": "Apply strict filesystem permissions."
+                  "description": "Shell injection may allow reading config files, environment variables, or exporting database dumps containing sensitive data.",
+                  "mitigation": "Restrict DB credentials, rotate secrets, use least privilege DB accounts, and block OS-level access to secret files."
                 }
               ],
-              "attrs": {
-                "text": { "text": "File System" }
-              }
+              "attrs": { "text": { "text": "Database\n(Customers / Orders)" } }
             },
             {
-              "type": "tm.Flow",
-              "source": { "id": "actor-user" },
-              "target": { "id": "process-webapp" },
-              "labels": [
+              "type": "tm.Process",
+              "size": { "width": 110, "height": 110 },
+              "position": { "x": 560, "y": 140 },
+              "angle": 0,
+              "id": "0b4cb6a3-8a3a-4a3c-8b7d-4cdbd3c1fe2f",
+              "z": 5,
+              "privilegeLevel": "executionContext =Limited",
+              "outOfScope": false,
+              "hasOpenThreats": true,
+              "threats": [
                 {
-                  "position": 0.5,
-                  "attrs": {
-                    "text": { "text": "HTTP Request (orderId / filename)" }
-                  }
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Arbitrary command execution",
+                  "type": "Elevation of privilege",
+                  "description": "Injected commands execute with the privileges of the web app process, enabling OS-level actions.",
+                  "mitigation": "Run the service as a non-privileged user, apply OS sandboxing (containers/AppArmor/SELinux), and restrict allowed binaries."
+                },
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "System resource abuse",
+                  "type": "Denial of service",
+                  "description": "Attackers may execute expensive commands (fork bombs, infinite loops, disk fill) to exhaust CPU/memory/storage.",
+                  "mitigation": "Apply rate limiting, timeouts, resource quotas, and monitoring/alerting; isolate worker processes."
                 }
               ],
-              "id": "flow-user-webapp"
+              "attrs": { "text": { "text": "Operating System /\nShell Runtime" } }
             },
             {
-              "type": "tm.Flow",
-              "source": { "id": "process-webapp" },
-              "target": { "id": "process-shell" },
-              "labels": [
+              "type": "tm.Store",
+              "size": { "width": 160, "height": 80 },
+              "position": { "x": 560, "y": 360 },
+              "angle": 0,
+              "id": "9d1e4a7d-0d8f-4b06-9a71-690a1f8e4d60",
+              "z": 6,
+              "outOfScope": false,
+              "hasOpenThreats": true,
+              "threats": [
                 {
-                  "position": 0.5,
-                  "attrs": {
-                    "text": { "text": "OS Command Execution" }
-                  }
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Sensitive file disclosure",
+                  "type": "Information disclosure",
+                  "description": "Command injection can be used to read system files and application secrets (e.g., config, keys).",
+                  "mitigation": "Minimize secrets on disk, restrict file permissions, and store secrets in a dedicated secrets manager."
                 }
               ],
-              "id": "flow-webapp-shell"
+              "attrs": { "text": { "text": "File System\n(uploads, reports, config)" } }
             },
             {
-              "type": "tm.Flow",
-              "source": { "id": "process-shell" },
-              "target": { "id": "store-files" },
-              "labels": [
+              "type": "tm.Process",
+              "size": { "width": 110, "height": 110 },
+              "position": { "x": 560, "y": 260 },
+              "angle": 0,
+              "id": "1c4bb3a7-72d4-4c73-8f1e-2dfc3b5f8ed1",
+              "z": 7,
+              "privilegeLevel": "executionContext =Limited",
+              "outOfScope": false,
+              "hasOpenThreats": true,
+              "threats": [
                 {
-                  "position": 0.5,
-                  "attrs": {
-                    "text": { "text": "File Read / Write / Delete" }
-                  }
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Unsafe maintenance script execution",
+                  "type": "Tampering",
+                  "description": "Background tasks (report generation / cleanup) may run shell commands using user-controlled values (e.g., filename).",
+                  "mitigation": "Use safe libraries (no shell), allowlist file paths, and validate/normalize inputs. Keep worker isolated from production secrets."
                 }
               ],
-              "id": "flow-shell-files"
+              "attrs": { "text": { "text": "Background Worker\n(Reports/Cleanup)" } }
             },
             {
               "type": "tm.Boundary",
+              "size": { "width": 10, "height": 10 },
               "smooth": true,
-              "source": { "x": 210, "y": 20 },
-              "target": { "x": 210, "y": 420 },
-              "id": "boundary-user-app"
+              "source": { "x": 185, "y": 95 },
+              "target": { "x": 185, "y": 460 },
+              "id": "e13f1f2c-9ed7-4f8a-8f43-2d7cc2f8d9a1",
+              "z": 20,
+              "attrs": {}
             },
             {
               "type": "tm.Boundary",
+              "size": { "width": 10, "height": 10 },
               "smooth": true,
-              "source": { "x": 480, "y": 20 },
-              "target": { "x": 480, "y": 420 },
-              "id": "boundary-app-os"
+              "source": { "x": 490, "y": 90 },
+              "target": { "x": 490, "y": 460 },
+              "id": "3f6a8b57-0e0a-4b10-8b93-5c2c6f6b1c2a",
+              "z": 21,
+              "attrs": {}
+            },
+            {
+              "type": "tm.Flow",
+              "size": { "width": 10, "height": 10 },
+              "smooth": true,
+              "source": { "id": "c6f50b22-93af-4db5-9c32-8e21b75a0f01" },
+              "target": { "id": "4a7d1a5f-5a0a-4df5-9b3b-0dca1efb72c7" },
+              "vertices": [{ "x": 190, "y": 120 }],
+              "id": "a4f17a25-ea3f-4a1f-b3c3-4ab2c1b6b2c5",
+              "z": 30,
+              "labels": [
+                {
+                  "position": 0.5,
+                  "attrs": { "text": { "text": "HTTPS Request\n(input: orderId / filename)" } }
+                }
+              ],
+              "isPublicNetwork": true,
+              "isEncrypted": true,
+              "protocol": "HTTP/S",
+              "outOfScope": false,
+              "hasOpenThreats": false,
+              "attrs": { ".connection": { "class": "connection hasNoOpenThreats isInScope" } }
+            },
+            {
+              "type": "tm.Flow",
+              "size": { "width": 10, "height": 10 },
+              "smooth": true,
+              "source": { "id": "4a7d1a5f-5a0a-4df5-9b3b-0dca1efb72c7" },
+              "target": { "id": "d4f0dfb8-9d2e-4b87-8b9c-9a2b6d8fdce0" },
+              "vertices": [{ "x": 360, "y": 250 }],
+              "id": "f7a8b1a5-5b7e-4f46-9a2f-8a2a4f8e6b33",
+              "z": 31,
+              "labels": [
+                {
+                  "position": 0.5,
+                  "attrs": { "text": { "text": "DB Query / Update" } }
+                }
+              ],
+              "isEncrypted": true,
+              "isPublicNetwork": false,
+              "outOfScope": false,
+              "hasOpenThreats": false,
+              "attrs": { ".connection": { "class": "connection hasNoOpenThreats isInScope" } }
+            },
+            {
+              "type": "tm.Flow",
+              "size": { "width": 10, "height": 10 },
+              "smooth": true,
+              "source": { "id": "4a7d1a5f-5a0a-4df5-9b3b-0dca1efb72c7" },
+              "target": { "id": "3bd17f3c-f0a2-4c35-a2a9-0d12a1cf9f7c" },
+              "vertices": [{ "x": 220, "y": 300 }],
+              "id": "2e9cc3d7-4a0d-4a5c-a2e9-4c03d8c4e10f",
+              "z": 32,
+              "labels": [
+                {
+                  "position": 0.5,
+                  "attrs": { "text": { "text": "Write Logs\n(auth, admin actions, errors)" } }
+                }
+              ],
+              "outOfScope": false,
+              "hasOpenThreats": false,
+              "attrs": { ".connection": { "class": "connection hasNoOpenThreats isInScope" } }
+            },
+            {
+              "type": "tm.Flow",
+              "size": { "width": 10, "height": 10 },
+              "smooth": true,
+              "source": { "id": "4a7d1a5f-5a0a-4df5-9b3b-0dca1efb72c7" },
+              "target": { "id": "1c4bb3a7-72d4-4c73-8f1e-2dfc3b5f8ed1" },
+              "vertices": [{ "x": 465, "y": 215 }],
+              "id": "b1e0c67f-9d4a-4c6e-8f1f-3c0b9e5d7a11",
+              "z": 33,
+              "labels": [
+                {
+                  "position": 0.5,
+                  "attrs": { "text": { "text": "Queue Job\n(report / cleanup request)" } }
+                }
+              ],
+              "outOfScope": false,
+              "hasOpenThreats": false,
+              "attrs": { ".connection": { "class": "connection hasNoOpenThreats isInScope" } }
+            },
+            {
+              "type": "tm.Flow",
+              "size": { "width": 10, "height": 10 },
+              "smooth": true,
+              "source": { "id": "1c4bb3a7-72d4-4c73-8f1e-2dfc3b5f8ed1" },
+              "target": { "id": "0b4cb6a3-8a3a-4a3c-8b7d-4cdbd3c1fe2f" },
+              "vertices": [{ "x": 645, "y": 225 }],
+              "id": "c2a8c5b9-2e2c-4fd5-9a0f-1c3d4b5e6f70",
+              "z": 34,
+              "labels": [
+                {
+                  "position": 0.5,
+                  "attrs": { "text": { "text": "OS Command Execution\n(unsafe if concatenated)" } }
+                }
+              ],
+              "outOfScope": false,
+              "hasOpenThreats": false,
+              "attrs": { ".connection": { "class": "connection hasNoOpenThreats isInScope" } }
+            },
+            {
+              "type": "tm.Flow",
+              "size": { "width": 10, "height": 10 },
+              "smooth": true,
+              "source": { "id": "0b4cb6a3-8a3a-4a3c-8b7d-4cdbd3c1fe2f" },
+              "target": { "id": "9d1e4a7d-0d8f-4b06-9a71-690a1f8e4d60" },
+              "vertices": [{ "x": 640, "y": 330 }],
+              "id": "d8a9b1c2-3d4e-4f50-9a6b-7c8d9e0f1a2b",
+              "z": 35,
+              "labels": [
+                {
+                  "position": 0.5,
+                  "attrs": { "text": { "text": "File Read/Write/Delete" } }
+                }
+              ],
+              "outOfScope": false,
+              "hasOpenThreats": false,
+              "attrs": { ".connection": { "class": "connection hasNoOpenThreats isInScope" } }
             }
           ]
         },
-        "size": {
-          "width": 900,
-          "height": 520
-        }
+        "size": { "height": 620, "width": 920 }
       }
-    ]
+    ],
+    "reviewer": "N/A"
   }
 }
