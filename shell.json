@@ -7,24 +7,11 @@
   },
   "detail": {
     "contributors": [
-      { "name": "Cassandra Gnaere", "role": "Security Architect" }
+      {
+        "name": "Cassandra Gnaere",
+        "role": "Security Architect"
+      }
     ],
-    "scope": {
-      "inScope": [
-        "Customer-facing web application",
-        "Admin panel and maintenance functions",
-        "Database layer",
-        "File system and uploads",
-        "Background workers",
-        "External service integrations"
-      ],
-      "outOfScope": [
-        "Mobile applications",
-        "Third-party payment processors",
-        "CDN and edge networks",
-        "Supply chain dependencies"
-      ]
-    },
     "diagrams": [
       {
         "title": "E-commerce System Threat Analysis",
@@ -35,8 +22,14 @@
           "cells": [
             {
               "type": "tm.Actor",
-              "size": { "width": 160, "height": 80 },
-              "position": { "x": 30, "y": 40 },
+              "size": {
+                "width": 160,
+                "height": 80
+              },
+              "position": {
+                "x": 50,
+                "y": 100
+              },
               "angle": 0,
               "id": "customer-browser",
               "z": 1,
@@ -52,12 +45,22 @@
               ],
               "outOfScope": false,
               "hasOpenThreats": true,
-              "attrs": { "text": { "text": "Customer Browser" } }
+              "attrs": {
+                "text": {
+                  "text": "Customer Browser"
+                }
+              }
             },
             {
               "type": "tm.Actor",
-              "size": { "width": 160, "height": 80 },
-              "position": { "x": 30, "y": 300 },
+              "size": {
+                "width": 160,
+                "height": 80
+              },
+              "position": {
+                "x": 50,
+                "y": 300
+              },
               "angle": 0,
               "id": "admin-browser",
               "z": 2,
@@ -73,12 +76,22 @@
               ],
               "outOfScope": false,
               "hasOpenThreats": true,
-              "attrs": { "text": { "text": "Admin Browser" } }
+              "attrs": {
+                "text": {
+                  "text": "Admin Browser"
+                }
+              }
             },
             {
               "type": "tm.Process",
-              "size": { "width": 130, "height": 130 },
-              "position": { "x": 240, "y": 140 },
+              "size": {
+                "width": 130,
+                "height": 130
+              },
+              "position": {
+                "x": 300,
+                "y": 200
+              },
               "angle": 0,
               "id": "web-application",
               "z": 3,
@@ -119,12 +132,22 @@
                   "mitigation": "Implement structured logging with user context, timestamps, and immutable storage. Log security events centrally."
                 }
               ],
-              "attrs": { "text": { "text": "E-commerce Web App\n(API + Admin Panel)" } }
+              "attrs": {
+                "text": {
+                  "text": "E-commerce Web App\n(API + Admin Panel)"
+                }
+              }
             },
             {
               "type": "tm.Store",
-              "size": { "width": 160, "height": 80 },
-              "position": { "x": 80, "y": 500 },
+              "size": {
+                "width": 160,
+                "height": 80
+              },
+              "position": {
+                "x": 300,
+                "y": 400
+              },
               "angle": 0,
               "id": "application-logs",
               "z": 4,
@@ -141,12 +164,22 @@
                   "mitigation": "Write logs to append-only storage, forward to a secure SIEM/log server, restrict file permissions."
                 }
               ],
-              "attrs": { "text": { "text": "Application Logs" } }
+              "attrs": {
+                "text": {
+                  "text": "Application Logs"
+                }
+              }
             },
             {
               "type": "tm.Store",
-              "size": { "width": 180, "height": 90 },
-              "position": { "x": 360, "y": 360 },
+              "size": {
+                "width": 180,
+                "height": 90
+              },
+              "position": {
+                "x": 500,
+                "y": 400
+              },
               "angle": 0,
               "id": "database",
               "z": 5,
@@ -170,12 +203,22 @@
                   "mitigation": "Use strong hashing (argon2, bcrypt), regularly rotate credentials, implement account lockouts."
                 }
               ],
-              "attrs": { "text": { "text": "Database\n(Customers, Orders, Products)" } }
+              "attrs": {
+                "text": {
+                  "text": "Database\n(Customers, Orders, Products)"
+                }
+              }
             },
             {
               "type": "tm.Process",
-              "size": { "width": 130, "height": 130 },
-              "position": { "x": 560, "y": 140 },
+              "size": {
+                "width": 130,
+                "height": 130
+              },
+              "position": {
+                "x": 600,
+                "y": 100
+              },
               "angle": 0,
               "id": "os-shell",
               "z": 6,
@@ -200,12 +243,22 @@
                   "mitigation": "Implement resource quotas, process limits, monitoring/alerting on unusual resource usage."
                 }
               ],
-              "attrs": { "text": { "text": "Operating System /\nShell Runtime" } }
+              "attrs": {
+                "text": {
+                  "text": "Operating System /\nShell Runtime"
+                }
+              }
             },
             {
               "type": "tm.Store",
-              "size": { "width": 160, "height": 80 },
-              "position": { "x": 560, "y": 360 },
+              "size": {
+                "width": 160,
+                "height": 80
+              },
+              "position": {
+                "x": 650,
+                "y": 400
+              },
               "angle": 0,
               "id": "file-system",
               "z": 7,
@@ -229,12 +282,22 @@
                   "mitigation": "Validate file types (magic bytes, not just extensions), store outside webroot, scan with antivirus, restrict execution permissions."
                 }
               ],
-              "attrs": { "text": { "text": "File System\n(uploads, config, reports)" } }
+              "attrs": {
+                "text": {
+                  "text": "File System\n(uploads, config, reports)"
+                }
+              }
             },
             {
               "type": "tm.Process",
-              "size": { "width": 130, "height": 130 },
-              "position": { "x": 560, "y": 260 },
+              "size": {
+                "width": 130,
+                "height": 130
+              },
+              "position": {
+                "x": 600,
+                "y": 250
+              },
               "angle": 0,
               "id": "background-worker",
               "z": 8,
@@ -251,12 +314,22 @@
                   "mitigation": "Use safe libraries (subprocess without shell=True), validate all inputs, run with minimal privileges."
                 }
               ],
-              "attrs": { "text": { "text": "Background Worker\n(Reports/Cleanup)" } }
+              "attrs": {
+                "text": {
+                  "text": "Background Worker\n(Reports/Cleanup)"
+                }
+              }
             },
             {
               "type": "tm.Store",
-              "size": { "width": 160, "height": 80 },
-              "position": { "x": 750, "y": 360 },
+              "size": {
+                "width": 160,
+                "height": 80
+              },
+              "position": {
+                "x": 800,
+                "y": 250
+              },
               "angle": 0,
               "id": "internal-services",
               "z": 9,
@@ -272,51 +345,119 @@
                   "mitigation": "Segment internal networks, firewall internal services, block access to metadata endpoints, use authentication for internal APIs."
                 }
               ],
-              "attrs": { "text": { "text": "Internal Services\n(metadata, admin, cache)" } }
+              "attrs": {
+                "text": {
+                  "text": "Internal Services\n(metadata, admin, cache)"
+                }
+              }
             },
             {
               "type": "tm.Boundary",
-              "size": { "width": 10, "height": 10 },
+              "size": {
+                "width": 10,
+                "height": 10
+              },
               "smooth": true,
-              "source": { "x": 185, "y": 95 },
-              "target": { "x": 185, "y": 560 },
+              "source": {
+                "x": 200,
+                "y": 50
+              },
+              "target": {
+                "x": 200,
+                "y": 550
+              },
               "id": "trust-boundary-1",
               "z": 20,
-              "attrs": { "text": { "text": "Internet" } }
+              "attrs": {
+                ".": {
+                  "stroke-dasharray": "5,5"
+                },
+                "text": {
+                  "text": "Internet"
+                }
+              }
             },
             {
               "type": "tm.Boundary",
-              "size": { "width": 10, "height": 10 },
+              "size": {
+                "width": 10,
+                "height": 10
+              },
               "smooth": true,
-              "source": { "x": 490, "y": 90 },
-              "target": { "x": 490, "y": 560 },
+              "source": {
+                "x": 450,
+                "y": 50
+              },
+              "target": {
+                "x": 450,
+                "y": 550
+              },
               "id": "trust-boundary-2",
               "z": 21,
-              "attrs": { "text": { "text": "DMZ/Application Layer" } }
+              "attrs": {
+                ".": {
+                  "stroke-dasharray": "5,5"
+                },
+                "text": {
+                  "text": "DMZ"
+                }
+              }
             },
             {
               "type": "tm.Boundary",
-              "size": { "width": 10, "height": 10 },
+              "size": {
+                "width": 10,
+                "height": 10
+              },
               "smooth": true,
-              "source": { "x": 720, "y": 90 },
-              "target": { "x": 720, "y": 560 },
+              "source": {
+                "x": 700,
+                "y": 50
+              },
+              "target": {
+                "x": 700,
+                "y": 550
+              },
               "id": "trust-boundary-3",
               "z": 22,
-              "attrs": { "text": { "text": "Internal Network" } }
+              "attrs": {
+                ".": {
+                  "stroke-dasharray": "5,5"
+                },
+                "text": {
+                  "text": "Internal Network"
+                }
+              }
             },
             {
               "type": "tm.Flow",
-              "size": { "width": 10, "height": 10 },
+              "size": {
+                "width": 10,
+                "height": 10
+              },
               "smooth": true,
-              "source": { "id": "customer-browser" },
-              "target": { "id": "web-application" },
-              "vertices": [{ "x": 190, "y": 120 }],
+              "source": {
+                "id": "customer-browser"
+              },
+              "target": {
+                "id": "web-application"
+              },
+              "vertices": [
+                {
+                  "x": 200,
+                  "y": 140
+                }
+              ],
               "id": "flow-customer-request",
               "z": 30,
               "labels": [
                 {
                   "position": 0.5,
-                  "attrs": { "text": { "text": "HTTPS Request\n(search, login, order)" } }
+                  "attrs": {
+                    "text": {
+                      "text": "HTTPS Request\n(search, login, order)"
+                    }
+                  }
                 }
               ],
               "isPublicNetwork": true,
@@ -328,17 +469,33 @@
             },
             {
               "type": "tm.Flow",
-              "size": { "width": 10, "height": 10 },
+              "size": {
+                "width": 10,
+                "height": 10
+              },
               "smooth": true,
-              "source": { "id": "admin-browser" },
-              "target": { "id": "web-application" },
-              "vertices": [{ "x": 190, "y": 340 }],
+              "source": {
+                "id": "admin-browser"
+              },
+              "target": {
+                "id": "web-application"
+              },
+              "vertices": [
+                {
+                  "x": 200,
+                  "y": 340
+                }
+              ],
               "id": "flow-admin-request",
               "z": 31,
               "labels": [
                 {
                   "position": 0.5,
-                  "attrs": { "text": { "text": "HTTPS Request\n(admin functions, upload)" } }
+                  "attrs": {
+                    "text": {
+                      "text": "HTTPS Request\n(admin functions, upload)"
+                    }
+                  }
                 }
               ],
               "isPublicNetwork": true,
@@ -350,17 +507,33 @@
             },
             {
               "type": "tm.Flow",
-              "size": { "width": 10, "height": 10 },
+              "size": {
+                "width": 10,
+                "height": 10
+              },
               "smooth": true,
-              "source": { "id": "web-application" },
-              "target": { "id": "database" },
-              "vertices": [{ "x": 360, "y": 250 }],
+              "source": {
+                "id": "web-application"
+              },
+              "target": {
+                "id": "database"
+              },
+              "vertices": [
+                {
+                  "x": 380,
+                  "y": 310
+                }
+              ],
               "id": "flow-db-query",
               "z": 32,
               "labels": [
                 {
                   "position": 0.5,
-                  "attrs": { "text": { "text": "SQL Queries\n(potential injection)" } }
+                  "attrs": {
+                    "text": {
+                      "text": "SQL Queries\n(potential injection)"
+                    }
+                  }
                 }
               ],
               "isEncrypted": true,
@@ -371,17 +544,33 @@
             },
             {
               "type": "tm.Flow",
-              "size": { "width": 10, "height": 10 },
+              "size": {
+                "width": 10,
+                "height": 10
+              },
               "smooth": true,
-              "source": { "id": "web-application" },
-              "target": { "id": "application-logs" },
-              "vertices": [{ "x": 220, "y": 380 }],
+              "source": {
+                "id": "web-application"
+              },
+              "target": {
+                "id": "application-logs"
+              },
+              "vertices": [
+                {
+                  "x": 300,
+                  "y": 330
+                }
+              ],
               "id": "flow-log-write",
               "z": 33,
               "labels": [
                 {
                   "position": 0.5,
-                  "attrs": { "text": { "text": "Write Logs" } }
+                  "attrs": {
+                    "text": {
+                      "text": "Write Logs"
+                    }
+                  }
                 }
               ],
               "outOfScope": false,
@@ -390,17 +579,33 @@
             },
             {
               "type": "tm.Flow",
-              "size": { "width": 10, "height": 10 },
+              "size": {
+                "width": 10,
+                "height": 10
+              },
               "smooth": true,
-              "source": { "id": "web-application" },
-              "target": { "id": "background-worker" },
-              "vertices": [{ "x": 465, "y": 215 }],
+              "source": {
+                "id": "web-application"
+              },
+              "target": {
+                "id": "background-worker"
+              },
+              "vertices": [
+                {
+                  "x": 420,
+                  "y": 265
+                }
+              ],
               "id": "flow-queue-job",
               "z": 34,
               "labels": [
                 {
                   "position": 0.5,
-                  "attrs": { "text": { "text": "Queue Job\n(user input passed)" } }
+                  "attrs": {
+                    "text": {
+                      "text": "Queue Job\n(user input passed)"
+                    }
+                  }
                 }
               ],
               "outOfScope": false,
@@ -409,17 +614,33 @@
             },
             {
               "type": "tm.Flow",
-              "size": { "width": 10, "height": 10 },
+              "size": {
+                "width": 10,
+                "height": 10
+              },
               "smooth": true,
-              "source": { "id": "background-worker" },
-              "target": { "id": "os-shell" },
-              "vertices": [{ "x": 645, "y": 225 }],
+              "source": {
+                "id": "background-worker"
+              },
+              "target": {
+                "id": "os-shell"
+              },
+              "vertices": [
+                {
+                  "x": 665,
+                  "y": 175
+                }
+              ],
               "id": "flow-shell-command",
               "z": 35,
               "labels": [
                 {
                   "position": 0.5,
-                  "attrs": { "text": { "text": "OS Command Execution\n(concatenated input)" } }
+                  "attrs": {
+                    "text": {
+                      "text": "OS Command Execution\n(concatenated input)"
+                    }
+                  }
                 }
               ],
               "outOfScope": false,
@@ -428,17 +649,37 @@
             },
             {
               "type": "tm.Flow",
-              "size": { "width": 10, "height": 10 },
+              "size": {
+                "width": 10,
+                "height": 10
+              },
               "smooth": true,
-              "source": { "id": "os-shell" },
-              "target": { "id": "file-system" },
-              "vertices": [{ "x": 640, "y": 330 }],
+              "source": {
+                "id": "os-shell"
+              },
+              "target": {
+                "id": "file-system"
+              },
+              "vertices": [
+                {
+                  "x": 730,
+                  "y": 250
+                },
+                {
+                  "x": 730,
+                  "y": 440
+                }
+              ],
               "id": "flow-file-access",
               "z": 36,
               "labels": [
                 {
                   "position": 0.5,
-                  "attrs": { "text": { "text": "File Read/Write" } }
+                  "attrs": {
+                    "text": {
+                      "text": "File Read/Write"
+                    }
+                  }
                 }
               ],
               "outOfScope": false,
@@ -447,17 +688,37 @@
             },
             {
               "type": "tm.Flow",
-              "size": { "width": 10, "height": 10 },
+              "size": {
+                "width": 10,
+                "height": 10
+              },
               "smooth": true,
-              "source": { "id": "web-application" },
-              "target": { "id": "internal-services" },
-              "vertices": [{ "x": 650, "y": 250 }],
+              "source": {
+                "id": "web-application"
+              },
+              "target": {
+                "id": "internal-services"
+              },
+              "vertices": [
+                {
+                  "x": 500,
+                  "y": 220
+                },
+                {
+                  "x": 750,
+                  "y": 220
+                }
+              ],
               "id": "flow-external-request",
               "z": 37,
               "labels": [
                 {
                   "position": 0.5,
-                  "attrs": { "text": { "text": "Outbound HTTP Request\n(SSRF vector)" } }
+                  "attrs": {
+                    "text": {
+                      "text": "Outbound HTTP Request\n(SSRF vector)"
+                    }
+                  }
                 }
               ],
               "isEncrypted": true,
@@ -467,79 +728,12 @@
             }
           ]
         },
-        "size": { "height": 700, "width": 950 }
+        "size": {
+          "height": 700,
+          "width": 950
+        }
       }
-    ],
-    "threatPrioritization": [
-      {
-        "id": "T1",
-        "threat": "SQL Injection",
-        "component": "Web Application → Database",
-        "risk": "Critical",
-        "justification": "Direct path to customer PII and payment data; common attack vector with high impact."
-      },
-      {
-        "id": "T2",
-        "threat": "Shell Injection",
-        "component": "Web App/Worker → OS Shell",
-        "risk": "Critical",
-        "justification": "Leads to full server compromise; can pivot to internal networks."
-      },
-      {
-        "id": "T3",
-        "threat": "SSRF",
-        "component": "Web App → Internal Services",
-        "risk": "High",
-        "justification": "Can bypass firewalls to access internal APIs, cloud metadata, or sensitive services."
-      },
-      {
-        "id": "T4",
-        "threat": "XSS",
-        "component": "Customer Browser",
-        "risk": "High",
-        "justification": "Direct impact on users: session theft, credential stealing, client-side attacks."
-      }
-    ],
-    "recommendedControls": [
-      {
-        "area": "Input Validation",
-        "controls": [
-          "Use parameterized queries for all database access",
-          "Implement strict allowlist validation for user input",
-          "Sanitize all user-generated content displayed in UI",
-          "Validate URLs for SSRF-prone features (allowlist domains/IPs)"
-        ]
-      },
-      {
-        "area": "Secure Development",
-        "controls": [
-          "Avoid shell commands entirely; use native APIs",
-          "If shell is necessary, use safe parameterization (no string concatenation)",
-          "Implement Content Security Policy (CSP) headers",
-          "Use ORM frameworks with built-in parameterization"
-        ]
-      },
-      {
-        "area": "Architecture & Operations",
-        "controls": [
-          "Run application with least privilege (non-root user)",
-          "Network segmentation between web tier and internal services",
-          "Implement WAF (Web Application Firewall)",
-          "Regular vulnerability scanning and penetration testing"
-        ]
-      },
-      {
-        "area": "Monitoring & Response",
-        "controls": [
-          "Log all admin actions and failed authentication attempts",
-          "Monitor for unusual patterns (many failed logins, unusual file access)",
-          "Implement SIEM for centralized log analysis",
-          "Regular security training for developers"
-        ]
-      }
-    ],
-    "reviewer": "Security Team",
-    "reviewDate": "2024-01-15",
-    "version": "2.0"
-  }
+    ]
+  },
+  "version": "2.0"
 }
