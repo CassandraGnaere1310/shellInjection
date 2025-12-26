@@ -1,236 +1,198 @@
 {
-  "threat_model": {
-    "metadata": {
-      "title": "Threat Model: Phishing-Based Account Takeover in Untrusted Wireless Environments",
-      "version": "1.0",
-      "date": "2025-12-25",
-      "alignment": "Final + Demo-Aligned, HD-Ready",
-      "authors": "[Authors]",
-      "course": "[Course]"
+  "title": "Threat Model: Phishing-Based Account Takeover in Untrusted Wireless Environments",
+  "version": "1.0",
+  "description": "Security Design Framework for Credential Protection in Untrusted Wireless Networks",
+  "authors": [
+    {
+      "name": "Author Name",
+      "affiliation": "Course/Institution"
+    }
+  ],
+  "date": "2025-12-25",
+  "threatModel": {
+    "overview": {
+      "problem": "Phishing-driven credential theft leading to account takeover in wireless environments",
+      "scope": "Credential harvesting over untrusted Wi-Fi leading to cloud account takeover attempts",
+      "objective": "Propose and evaluate a security framework preventing takeover even if credentials are stolen"
     },
-    
-    "executive_summary": {
-      "problem": "Phishing-driven credential theft leading to account takeover",
-      "wireless_risk_amplification": "Hostile/untrusted access layer expands attack surface",
-      "proposed_framework": "Zero Trust + Layering/Encapsulation + Least Privilege + Fail-safe defaults + Usability considerations",
-      "key_result": "Phishing can still occur, but account takeover is blocked via MFA + verification controls"
-    },
-    
-    "threat_actors": [
+    "assets": [
       {
-        "id": "TA-001",
-        "name": "External Attacker",
+        "id": "A1",
+        "name": "User Credentials",
+        "type": "Authentication",
+        "value": "High",
+        "description": "Username/password combinations for cloud services"
+      },
+      {
+        "id": "A2",
+        "name": "Cloud Account Access",
+        "type": "Access",
+        "value": "Critical",
+        "description": "Access to email, documents, and organizational resources"
+      },
+      {
+        "id": "A3",
+        "name": "Session Tokens",
+        "type": "Authentication",
+        "value": "High",
+        "description": "Authentication tokens and cookies"
+      }
+    ],
+    "actors": [
+      {
+        "id": "ACT-001",
+        "name": "Attacker",
         "type": "External",
         "capabilities": [
-          "Operate within untrusted wireless network",
-          "Intercept/manipulate network traffic",
-          "Deploy phishing portals",
+          "Deploy phishing portals in wireless networks",
+          "Intercept network traffic",
           "Capture credentials",
           "Attempt account takeover"
         ],
-        "motivation": "Credential theft, unauthorized access, data exfiltration",
-        "resources": "Kali Linux, SET tools, wireless access"
+        "motivation": "Credential theft, unauthorized access, data exfiltration"
       },
       {
-        "id": "TA-002",
+        "id": "ACT-002",
         "name": "User",
         "type": "Legitimate",
-        "role": "Victim",
-        "assumptions": "May connect to untrusted Wi-Fi, susceptible to phishing"
-      }
-    ],
-    
-    "assets": {
-      "primary": [
-        {
-          "id": "AS-001",
-          "name": "User Credentials",
-          "type": "Authentication",
-          "confidentiality": "Critical",
-          "integrity": "High",
-          "availability": "Medium"
-        },
-        {
-          "id": "AS-002",
-          "name": "Cloud Account Access",
-          "type": "Access",
-          "confidentiality": "Critical",
-          "integrity": "Critical",
-          "availability": "Medium"
-        },
-        {
-          "id": "AS-003",
-          "name": "Session Tokens",
-          "type": "Authentication",
-          "confidentiality": "Critical",
-          "integrity": "High",
-          "availability": "Low"
-        }
-      ],
-      "secondary": [
-        "Email data",
-        "Personal information",
-        "Organizational resources"
-      ]
-    },
-    
-    "trust_boundaries": [
-      {
-        "boundary": "Device ↔ Wireless Network",
-        "trust_level": "Untrusted",
-        "assumption": "Network may be hostile"
+        "description": "Victim connecting to untrusted wireless network"
       },
       {
-        "boundary": "Wireless Network ↔ Internet",
-        "trust_level": "Untrusted",
-        "assumption": "Traffic may be intercepted"
-      },
-      {
-        "boundary": "Internet ↔ Cloud Identity Provider",
-        "trust_level": "Trusted",
-        "assumption": "TLS/HTTPS secured"
+        "id": "ACT-003",
+        "name": "Cloud Identity Provider",
+        "type": "System",
+        "description": "Microsoft/Google/other cloud authentication service"
       }
     ],
-    
-    "attack_scenarios": [
+    "threats": [
       {
-        "id": "AS-001",
+        "id": "T1",
         "name": "Credential Harvesting via Wireless Phishing",
-        "steps": [
-          "User connects to untrusted Wi-Fi",
-          "Attacker presents fraudulent authentication portal",
-          "User submits credentials to fake portal",
-          "Attacker captures credentials",
-          "Attacker attempts real service login"
-        ],
-        "success_condition": "Credentials captured without user detection"
+        "category": "Spoofing",
+        "description": "Attacker presents fake login portal over untrusted wireless network",
+        "likelihood": "High",
+        "impact": "High"
       },
       {
-        "id": "AS-002",
+        "id": "T2",
         "name": "Account Takeover Attempt",
-        "steps": [
-          "Attacker uses stolen credentials",
-          "Attempts authentication to legitimate service",
-          "Bypasses MFA if possible",
-          "Gains unauthorized access",
-          "Exploits account privileges"
-        ],
-        "success_condition": "Unauthorized authentication successful"
+        "category": "Tampering",
+        "description": "Using stolen credentials to gain unauthorized access",
+        "likelihood": "High",
+        "impact": "Critical"
+      },
+      {
+        "id": "T3",
+        "name": "Session Hijacking",
+        "category": "Information Disclosure",
+        "description": "Intercepting or stealing session tokens",
+        "likelihood": "Medium",
+        "impact": "High"
       }
     ],
-    
-    "security_controls": {
-      "cryptographic_tool": "Multi-Factor Authentication (MFA / TOTP-based)",
-      "additional_tool": "Cloud Identity Conditional Access / IAM Policy Enforcement",
-      
-      "framework_principles": [
+    "trustBoundaries": [
+      {
+        "id": "TB1",
+        "name": "Device to Wireless Network",
+        "trustLevel": "Untrusted",
+        "assumption": "Wireless network may be hostile or compromised"
+      },
+      {
+        "id": "TB2",
+        "name": "Wireless Network to Internet",
+        "trustLevel": "Untrusted",
+        "assumption": "Traffic may be intercepted or manipulated"
+      },
+      {
+        "id": "TB3",
+        "name": "Internet to Cloud Service",
+        "trustLevel": "Trusted",
+        "assumption": "TLS/HTTPS secured communication"
+      }
+    ],
+    "securityControls": {
+      "cryptographicTool": "Multi-Factor Authentication (MFA/TOTP)",
+      "additionalTool": "Cloud Identity Conditional Access Policies",
+      "principles": [
         {
-          "principle": "Zero Trust",
+          "name": "Zero Trust",
           "controls": [
-            "Continuous verification signals",
+            "Continuous verification",
             "Policy-driven access decisions",
-            "Network/location not trusted by default"
+            "Assume breach mentality"
           ]
         },
         {
-          "principle": "Encapsulation/Layering",
+          "name": "Layering/Encapsulation",
           "controls": [
-            "TLS/HTTPS for authentication flow",
-            "MFA as additional layer",
-            "VPN over untrusted Wi-Fi (optional)"
+            "TLS/HTTPS enforcement",
+            "MFA requirement",
+            "Optional VPN for untrusted networks"
           ]
         },
         {
-          "principle": "Least Privilege",
+          "name": "Least Privilege",
           "controls": [
             "Role-based access control",
-            "Restricted session scopes",
-            "Minimal permissions"
+            "Session scope limitations",
+            "Minimal required permissions"
           ]
         },
         {
-          "principle": "Fail-safe Defaults + Usability",
+          "name": "Fail-Safe Defaults",
           "controls": [
-            "Default deny on failed verification",
-            "MFA fatigue mitigation",
-            "User-friendly security prompts"
+            "Default deny on authentication failure",
+            "Block suspicious login attempts",
+            "Automatic session termination"
           ]
         }
       ]
     },
-    
-    "demonstration_components": {
+    "demonstration": {
       "environment": {
-        "attacker": "Kali VM (simulation)",
-        "victim": "Separate browser/incognito",
-        "accounts": "Dummy Microsoft account with Authenticator MFA",
-        "ethics_boundaries": "Controlled lab environment only"
+        "attacker": "Kali Linux VM with SET",
+        "victim": "Browser with dummy account",
+        "account": "phishing.demo2025@outlook.com (dummy)",
+        "credentials": "DemoPassword123! (dummy)"
       },
-      
-      "threat_demo": {
-        "scenario": "Credential harvesting over 'Untrusted Wi-Fi'",
-        "tools": "SET (Social Engineering Toolkit)",
-        "method": "Cloning legitimate-looking cloud login portal",
-        "output": "Terminal credential capture",
-        "limitation": "Modern OAuth flows resist simple cloning (as demonstrated)",
-        "key_finding": "Password-based authentication insufficient in hostile wireless environments"
+      "threatDemo": {
+        "tool": "Social Engineering Toolkit (SET)",
+        "target": "Cloned login portal",
+        "result": "Credential capture simulated",
+        "limitation": "Modern OAuth flows resist simple form cloning"
       },
-      
-      "defense_demo": {
-        "scenario": "Takeover attempt blocked",
-        "steps": [
-          "Attacker tries stolen credentials",
-          "MFA prompt appears",
-          "Without user device, authentication fails",
-          "Conditional access policies enforce verification"
-        ],
-        "effectiveness": "Takeover prevented despite credential theft"
+      "defenseDemo": {
+        "control": "MFA + Conditional Access",
+        "result": "Takeover attempt blocked",
+        "evidence": "MFA prompt prevents authentication without second factor"
       }
     },
-    
-    "risk_assessment": {
-      "before_controls": {
-        "confidentiality": "High (credential exposure)",
-        "integrity": "High (unauthorized modifications)",
-        "availability": "Medium (potential account lockout)",
-        "overall_risk": "High"
+    "riskAssessment": {
+      "beforeControls": {
+        "confidentiality": "High",
+        "integrity": "High",
+        "availability": "Medium",
+        "overall": "High"
       },
-      "after_controls": {
-        "confidentiality": "Medium (theft possible, takeover prevented)",
-        "integrity": "Low (MFA blocks unauthorized changes)",
-        "availability": "Low (legitimate access maintained)",
-        "overall_risk": "Medium-Low"
+      "afterControls": {
+        "confidentiality": "Medium",
+        "integrity": "Low",
+        "availability": "Low",
+        "overall": "Medium-Low"
       }
     },
-    
-    "evaluation_criteria": [
-      "Credential harvesting successful? (Yes/No)",
-      "Account takeover successful? (No, blocked by MFA)",
-      "Primary control effectiveness? (MFA + Conditional Access)",
-      "Residual risks? (MFA fatigue, session theft)",
-      "Usability impact? (Minimal with proper design)"
-    ],
-    
-    "limitations": [
-      "MFA fatigue and push approval risks",
-      "Users still susceptible to deception",
-      "Dependency on identity provider controls",
-      "Session token compromise possible",
-      "Device-level threats not addressed"
-    ],
-    
-    "legal_ethical_considerations": [
-      "Ethical use of phishing tools (lab only)",
-      "Dummy accounts exclusively",
+    "legalEthicalConsiderations": [
+      "Ethical use of security tools in controlled lab environment only",
+      "Dummy accounts and credentials exclusively",
       "No real credential collection",
       "No Wi-Fi cracking or MFA bypass attempts",
-      "No targeting real users"
+      "No targeting real users or systems"
     ],
-    
-    "references": {
-      "minimum_required": 10,
-      "types": ["NIST", "Academic", "Cloud Documentation", "Industry Reports"],
-      "format": "IEEE"
-    }
+    "references": [
+      "NIST SP 800-63B-4: Digital Identity Guidelines",
+      "Microsoft Zero Trust Strategy & Architecture",
+      "ENISA Threat Landscape 2023",
+      "Verizon 2023 Data Breach Investigations Report"
+    ]
   }
 }
