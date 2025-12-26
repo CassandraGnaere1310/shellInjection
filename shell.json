@@ -1,739 +1,236 @@
 {
-  "summary": {
-    "title": "Comprehensive Threat Model for E-commerce System",
-    "owner": "Cassandra Gnaere",
-    "description": "Threat model covering critical web vulnerabilities in an e-commerce system: Shell Injection, SQL Injection, XSS, and SSRF. Includes customer-facing and administrative components.",
-    "id": "THREAT-MODEL-ECOMM-001"
-  },
-  "detail": {
-    "contributors": [
+  "threat_model": {
+    "metadata": {
+      "title": "Threat Model: Phishing-Based Account Takeover in Untrusted Wireless Environments",
+      "version": "1.0",
+      "date": "2025-12-25",
+      "alignment": "Final + Demo-Aligned, HD-Ready",
+      "authors": "[Authors]",
+      "course": "[Course]"
+    },
+    
+    "executive_summary": {
+      "problem": "Phishing-driven credential theft leading to account takeover",
+      "wireless_risk_amplification": "Hostile/untrusted access layer expands attack surface",
+      "proposed_framework": "Zero Trust + Layering/Encapsulation + Least Privilege + Fail-safe defaults + Usability considerations",
+      "key_result": "Phishing can still occur, but account takeover is blocked via MFA + verification controls"
+    },
+    
+    "threat_actors": [
       {
-        "name": "Cassandra Gnaere",
-        "role": "Security Architect"
+        "id": "TA-001",
+        "name": "External Attacker",
+        "type": "External",
+        "capabilities": [
+          "Operate within untrusted wireless network",
+          "Intercept/manipulate network traffic",
+          "Deploy phishing portals",
+          "Capture credentials",
+          "Attempt account takeover"
+        ],
+        "motivation": "Credential theft, unauthorized access, data exfiltration",
+        "resources": "Kali Linux, SET tools, wireless access"
+      },
+      {
+        "id": "TA-002",
+        "name": "User",
+        "type": "Legitimate",
+        "role": "Victim",
+        "assumptions": "May connect to untrusted Wi-Fi, susceptible to phishing"
       }
     ],
-    "diagrams": [
+    
+    "assets": {
+      "primary": [
+        {
+          "id": "AS-001",
+          "name": "User Credentials",
+          "type": "Authentication",
+          "confidentiality": "Critical",
+          "integrity": "High",
+          "availability": "Medium"
+        },
+        {
+          "id": "AS-002",
+          "name": "Cloud Account Access",
+          "type": "Access",
+          "confidentiality": "Critical",
+          "integrity": "Critical",
+          "availability": "Medium"
+        },
+        {
+          "id": "AS-003",
+          "name": "Session Tokens",
+          "type": "Authentication",
+          "confidentiality": "Critical",
+          "integrity": "High",
+          "availability": "Low"
+        }
+      ],
+      "secondary": [
+        "Email data",
+        "Personal information",
+        "Organizational resources"
+      ]
+    },
+    
+    "trust_boundaries": [
       {
-        "title": "E-commerce System Threat Analysis",
-        "thumbnail": "./public/content/images/thumbnail.stride.jpg",
-        "diagramType": "STRIDE",
-        "id": 0,
-        "diagramJson": {
-          "cells": [
-            {
-              "type": "tm.Actor",
-              "size": {
-                "width": 160,
-                "height": 80
-              },
-              "position": {
-                "x": 50,
-                "y": 100
-              },
-              "angle": 0,
-              "id": "customer-browser",
-              "z": 1,
-              "threats": [
-                {
-                  "status": "Open",
-                  "severity": "High",
-                  "title": "Cross-Site Scripting (XSS) attack vector",
-                  "type": "Spoofing/Tampering",
-                  "description": "Malicious scripts injected via user input can execute in other users' browsers, stealing sessions, credentials, or manipulating page content.",
-                  "mitigation": "Implement Content Security Policy (CSP), sanitize all user-generated content, use output encoding, and enforce HttpOnly flags on cookies."
-                }
-              ],
-              "outOfScope": false,
-              "hasOpenThreats": true,
-              "attrs": {
-                "text": {
-                  "text": "Customer Browser"
-                }
-              }
-            },
-            {
-              "type": "tm.Actor",
-              "size": {
-                "width": 160,
-                "height": 80
-              },
-              "position": {
-                "x": 50,
-                "y": 300
-              },
-              "angle": 0,
-              "id": "admin-browser",
-              "z": 2,
-              "threats": [
-                {
-                  "status": "Open",
-                  "severity": "Critical",
-                  "title": "Privileged account compromise",
-                  "type": "Elevation of Privilege",
-                  "description": "Admin accounts are high-value targets. Compromise leads to full system access.",
-                  "mitigation": "Enforce MFA, session timeouts, privilege separation, and audit all admin actions."
-                }
-              ],
-              "outOfScope": false,
-              "hasOpenThreats": true,
-              "attrs": {
-                "text": {
-                  "text": "Admin Browser"
-                }
-              }
-            },
-            {
-              "type": "tm.Process",
-              "size": {
-                "width": 130,
-                "height": 130
-              },
-              "position": {
-                "x": 300,
-                "y": 200
-              },
-              "angle": 0,
-              "id": "web-application",
-              "z": 3,
-              "privilegeLevel": "Limited",
-              "outOfScope": false,
-              "hasOpenThreats": true,
-              "threats": [
-                {
-                  "status": "Open",
-                  "severity": "Critical",
-                  "title": "SQL Injection via user input",
-                  "type": "Tampering/Information Disclosure",
-                  "description": "Untrusted input in queries (search, login, filters) can modify SQL logic, leading to data exposure, modification, or deletion.",
-                  "mitigation": "Use parameterized queries/prepared statements, ORM with parameterization, input validation, and least privilege DB accounts."
-                },
-                {
-                  "status": "Open",
-                  "severity": "Critical",
-                  "title": "Shell injection in admin functions",
-                  "type": "Elevation of Privilege",
-                  "description": "User-controlled parameters (orderId, filename) concatenated into OS commands allow arbitrary command execution.",
-                  "mitigation": "Avoid shell execution; use safe APIs; if unavoidable, use allowlist validation and parameterized arguments without shell metacharacters."
-                },
-                {
-                  "status": "Open",
-                  "severity": "High",
-                  "title": "Server-Side Request Forgery (SSRF)",
-                  "type": "Information Disclosure/Tampering",
-                  "description": "User-supplied URLs in features (image upload from URL, webhook testing) can be abused to access internal services or cloud metadata.",
-                  "mitigation": "Validate and sanitize URLs, use allowlists for domains/IPs, disable URL schemes (file://, gopher://), and implement network segmentation."
-                },
-                {
-                  "status": "Open",
-                  "severity": "Medium",
-                  "title": "Insufficient request and audit logging",
-                  "type": "Repudiation",
-                  "description": "Missing logs for admin actions, failed logins, or suspicious inputs hinder incident investigation.",
-                  "mitigation": "Implement structured logging with user context, timestamps, and immutable storage. Log security events centrally."
-                }
-              ],
-              "attrs": {
-                "text": {
-                  "text": "E-commerce Web App\n(API + Admin Panel)"
-                }
-              }
-            },
-            {
-              "type": "tm.Store",
-              "size": {
-                "width": 160,
-                "height": 80
-              },
-              "position": {
-                "x": 300,
-                "y": 400
-              },
-              "angle": 0,
-              "id": "application-logs",
-              "z": 4,
-              "isALog": true,
-              "outOfScope": false,
-              "hasOpenThreats": true,
-              "threats": [
-                {
-                  "status": "Open",
-                  "severity": "Medium",
-                  "title": "Log tampering or deletion",
-                  "type": "Repudiation",
-                  "description": "If attackers gain command execution, they can delete or modify logs to cover their tracks.",
-                  "mitigation": "Write logs to append-only storage, forward to a secure SIEM/log server, restrict file permissions."
-                }
-              ],
-              "attrs": {
-                "text": {
-                  "text": "Application Logs"
-                }
-              }
-            },
-            {
-              "type": "tm.Store",
-              "size": {
-                "width": 180,
-                "height": 90
-              },
-              "position": {
-                "x": 500,
-                "y": 400
-              },
-              "angle": 0,
-              "id": "database",
-              "z": 5,
-              "outOfScope": false,
-              "hasOpenThreats": true,
-              "threats": [
-                {
-                  "status": "Open",
-                  "severity": "Critical",
-                  "title": "SQL injection leading to data breach",
-                  "type": "Information Disclosure",
-                  "description": "Successful SQL injection can expose customer PII, payment data, credentials, or allow data destruction.",
-                  "mitigation": "Encrypt sensitive data at rest, implement database activity monitoring, use network segmentation, regular patching."
-                },
-                {
-                  "status": "Open",
-                  "severity": "High",
-                  "title": "Credential theft via SQLi",
-                  "type": "Spoofing",
-                  "description": "SQL injection can extract password hashes or session tokens for account takeover.",
-                  "mitigation": "Use strong hashing (argon2, bcrypt), regularly rotate credentials, implement account lockouts."
-                }
-              ],
-              "attrs": {
-                "text": {
-                  "text": "Database\n(Customers, Orders, Products)"
-                }
-              }
-            },
-            {
-              "type": "tm.Process",
-              "size": {
-                "width": 130,
-                "height": 130
-              },
-              "position": {
-                "x": 600,
-                "y": 100
-              },
-              "angle": 0,
-              "id": "os-shell",
-              "z": 6,
-              "privilegeLevel": "Limited",
-              "outOfScope": false,
-              "hasOpenThreats": true,
-              "threats": [
-                {
-                  "status": "Open",
-                  "severity": "Critical",
-                  "title": "Arbitrary OS command execution",
-                  "type": "Elevation of Privilege",
-                  "description": "Shell injection gives attackers full control over the server with web app privileges.",
-                  "mitigation": "Run web app as non-root user, implement containerization/VM isolation, use AppArmor/SELinux, restrict system calls."
-                },
-                {
-                  "status": "Open",
-                  "severity": "High",
-                  "title": "Resource exhaustion via shell commands",
-                  "type": "Denial of Service",
-                  "description": "Malicious commands (fork bombs, memory allocation) can crash the server.",
-                  "mitigation": "Implement resource quotas, process limits, monitoring/alerting on unusual resource usage."
-                }
-              ],
-              "attrs": {
-                "text": {
-                  "text": "Operating System /\nShell Runtime"
-                }
-              }
-            },
-            {
-              "type": "tm.Store",
-              "size": {
-                "width": 160,
-                "height": 80
-              },
-              "position": {
-                "x": 650,
-                "y": 400
-              },
-              "angle": 0,
-              "id": "file-system",
-              "z": 7,
-              "outOfScope": false,
-              "hasOpenThreats": true,
-              "threats": [
-                {
-                  "status": "Open",
-                  "severity": "High",
-                  "title": "Sensitive file disclosure via shell injection",
-                  "type": "Information Disclosure",
-                  "description": "Commands like 'cat /etc/passwd' or 'env' can leak secrets, config files, or source code.",
-                  "mitigation": "Store secrets in a dedicated manager (Vault, KMS), restrict file permissions, use minimal installations."
-                },
-                {
-                  "status": "Open",
-                  "severity": "High",
-                  "title": "Malicious file upload leading to RCE",
-                  "type": "Tampering",
-                  "description": "Uploaded files (images, docs) may contain malicious code executed via subsequent processing.",
-                  "mitigation": "Validate file types (magic bytes, not just extensions), store outside webroot, scan with antivirus, restrict execution permissions."
-                }
-              ],
-              "attrs": {
-                "text": {
-                  "text": "File System\n(uploads, config, reports)"
-                }
-              }
-            },
-            {
-              "type": "tm.Process",
-              "size": {
-                "width": 130,
-                "height": 130
-              },
-              "position": {
-                "x": 600,
-                "y": 250
-              },
-              "angle": 0,
-              "id": "background-worker",
-              "z": 8,
-              "privilegeLevel": "Limited",
-              "outOfScope": false,
-              "hasOpenThreats": true,
-              "threats": [
-                {
-                  "status": "Open",
-                  "severity": "High",
-                  "title": "Unsafe command execution in scheduled tasks",
-                  "type": "Tampering",
-                  "description": "Background jobs (report generation, cleanup) using user input in commands are vulnerable to shell injection.",
-                  "mitigation": "Use safe libraries (subprocess without shell=True), validate all inputs, run with minimal privileges."
-                }
-              ],
-              "attrs": {
-                "text": {
-                  "text": "Background Worker\n(Reports/Cleanup)"
-                }
-              }
-            },
-            {
-              "type": "tm.Store",
-              "size": {
-                "width": 160,
-                "height": 80
-              },
-              "position": {
-                "x": 800,
-                "y": 250
-              },
-              "angle": 0,
-              "id": "internal-services",
-              "z": 9,
-              "outOfScope": false,
-              "hasOpenThreats": true,
-              "threats": [
-                {
-                  "status": "Open",
-                  "severity": "High",
-                  "title": "Internal service access via SSRF",
-                  "type": "Information Disclosure",
-                  "description": "SSRF can reach internal APIs, databases, cloud metadata services (169.254.169.254), or admin interfaces.",
-                  "mitigation": "Segment internal networks, firewall internal services, block access to metadata endpoints, use authentication for internal APIs."
-                }
-              ],
-              "attrs": {
-                "text": {
-                  "text": "Internal Services\n(metadata, admin, cache)"
-                }
-              }
-            },
-            {
-              "type": "tm.Boundary",
-              "size": {
-                "width": 10,
-                "height": 10
-              },
-              "smooth": true,
-              "source": {
-                "x": 200,
-                "y": 50
-              },
-              "target": {
-                "x": 200,
-                "y": 550
-              },
-              "id": "trust-boundary-1",
-              "z": 20,
-              "attrs": {
-                ".": {
-                  "stroke-dasharray": "5,5"
-                },
-                "text": {
-                  "text": "Internet"
-                }
-              }
-            },
-            {
-              "type": "tm.Boundary",
-              "size": {
-                "width": 10,
-                "height": 10
-              },
-              "smooth": true,
-              "source": {
-                "x": 450,
-                "y": 50
-              },
-              "target": {
-                "x": 450,
-                "y": 550
-              },
-              "id": "trust-boundary-2",
-              "z": 21,
-              "attrs": {
-                ".": {
-                  "stroke-dasharray": "5,5"
-                },
-                "text": {
-                  "text": "DMZ"
-                }
-              }
-            },
-            {
-              "type": "tm.Boundary",
-              "size": {
-                "width": 10,
-                "height": 10
-              },
-              "smooth": true,
-              "source": {
-                "x": 700,
-                "y": 50
-              },
-              "target": {
-                "x": 700,
-                "y": 550
-              },
-              "id": "trust-boundary-3",
-              "z": 22,
-              "attrs": {
-                ".": {
-                  "stroke-dasharray": "5,5"
-                },
-                "text": {
-                  "text": "Internal Network"
-                }
-              }
-            },
-            {
-              "type": "tm.Flow",
-              "size": {
-                "width": 10,
-                "height": 10
-              },
-              "smooth": true,
-              "source": {
-                "id": "customer-browser"
-              },
-              "target": {
-                "id": "web-application"
-              },
-              "vertices": [
-                {
-                  "x": 200,
-                  "y": 140
-                }
-              ],
-              "id": "flow-customer-request",
-              "z": 30,
-              "labels": [
-                {
-                  "position": 0.5,
-                  "attrs": {
-                    "text": {
-                      "text": "HTTPS Request\n(search, login, order)"
-                    }
-                  }
-                }
-              ],
-              "isPublicNetwork": true,
-              "isEncrypted": true,
-              "protocol": "HTTPS",
-              "outOfScope": false,
-              "hasOpenThreats": false,
-              "threats": []
-            },
-            {
-              "type": "tm.Flow",
-              "size": {
-                "width": 10,
-                "height": 10
-              },
-              "smooth": true,
-              "source": {
-                "id": "admin-browser"
-              },
-              "target": {
-                "id": "web-application"
-              },
-              "vertices": [
-                {
-                  "x": 200,
-                  "y": 340
-                }
-              ],
-              "id": "flow-admin-request",
-              "z": 31,
-              "labels": [
-                {
-                  "position": 0.5,
-                  "attrs": {
-                    "text": {
-                      "text": "HTTPS Request\n(admin functions, upload)"
-                    }
-                  }
-                }
-              ],
-              "isPublicNetwork": true,
-              "isEncrypted": true,
-              "protocol": "HTTPS",
-              "outOfScope": false,
-              "hasOpenThreats": false,
-              "threats": []
-            },
-            {
-              "type": "tm.Flow",
-              "size": {
-                "width": 10,
-                "height": 10
-              },
-              "smooth": true,
-              "source": {
-                "id": "web-application"
-              },
-              "target": {
-                "id": "database"
-              },
-              "vertices": [
-                {
-                  "x": 380,
-                  "y": 310
-                }
-              ],
-              "id": "flow-db-query",
-              "z": 32,
-              "labels": [
-                {
-                  "position": 0.5,
-                  "attrs": {
-                    "text": {
-                      "text": "SQL Queries\n(potential injection)"
-                    }
-                  }
-                }
-              ],
-              "isEncrypted": true,
-              "isPublicNetwork": false,
-              "outOfScope": false,
-              "hasOpenThreats": false,
-              "threats": []
-            },
-            {
-              "type": "tm.Flow",
-              "size": {
-                "width": 10,
-                "height": 10
-              },
-              "smooth": true,
-              "source": {
-                "id": "web-application"
-              },
-              "target": {
-                "id": "application-logs"
-              },
-              "vertices": [
-                {
-                  "x": 300,
-                  "y": 330
-                }
-              ],
-              "id": "flow-log-write",
-              "z": 33,
-              "labels": [
-                {
-                  "position": 0.5,
-                  "attrs": {
-                    "text": {
-                      "text": "Write Logs"
-                    }
-                  }
-                }
-              ],
-              "outOfScope": false,
-              "hasOpenThreats": false,
-              "threats": []
-            },
-            {
-              "type": "tm.Flow",
-              "size": {
-                "width": 10,
-                "height": 10
-              },
-              "smooth": true,
-              "source": {
-                "id": "web-application"
-              },
-              "target": {
-                "id": "background-worker"
-              },
-              "vertices": [
-                {
-                  "x": 420,
-                  "y": 265
-                }
-              ],
-              "id": "flow-queue-job",
-              "z": 34,
-              "labels": [
-                {
-                  "position": 0.5,
-                  "attrs": {
-                    "text": {
-                      "text": "Queue Job\n(user input passed)"
-                    }
-                  }
-                }
-              ],
-              "outOfScope": false,
-              "hasOpenThreats": false,
-              "threats": []
-            },
-            {
-              "type": "tm.Flow",
-              "size": {
-                "width": 10,
-                "height": 10
-              },
-              "smooth": true,
-              "source": {
-                "id": "background-worker"
-              },
-              "target": {
-                "id": "os-shell"
-              },
-              "vertices": [
-                {
-                  "x": 665,
-                  "y": 175
-                }
-              ],
-              "id": "flow-shell-command",
-              "z": 35,
-              "labels": [
-                {
-                  "position": 0.5,
-                  "attrs": {
-                    "text": {
-                      "text": "OS Command Execution\n(concatenated input)"
-                    }
-                  }
-                }
-              ],
-              "outOfScope": false,
-              "hasOpenThreats": false,
-              "threats": []
-            },
-            {
-              "type": "tm.Flow",
-              "size": {
-                "width": 10,
-                "height": 10
-              },
-              "smooth": true,
-              "source": {
-                "id": "os-shell"
-              },
-              "target": {
-                "id": "file-system"
-              },
-              "vertices": [
-                {
-                  "x": 730,
-                  "y": 250
-                },
-                {
-                  "x": 730,
-                  "y": 440
-                }
-              ],
-              "id": "flow-file-access",
-              "z": 36,
-              "labels": [
-                {
-                  "position": 0.5,
-                  "attrs": {
-                    "text": {
-                      "text": "File Read/Write"
-                    }
-                  }
-                }
-              ],
-              "outOfScope": false,
-              "hasOpenThreats": false,
-              "threats": []
-            },
-            {
-              "type": "tm.Flow",
-              "size": {
-                "width": 10,
-                "height": 10
-              },
-              "smooth": true,
-              "source": {
-                "id": "web-application"
-              },
-              "target": {
-                "id": "internal-services"
-              },
-              "vertices": [
-                {
-                  "x": 500,
-                  "y": 220
-                },
-                {
-                  "x": 750,
-                  "y": 220
-                }
-              ],
-              "id": "flow-external-request",
-              "z": 37,
-              "labels": [
-                {
-                  "position": 0.5,
-                  "attrs": {
-                    "text": {
-                      "text": "Outbound HTTP Request\n(SSRF vector)"
-                    }
-                  }
-                }
-              ],
-              "isEncrypted": true,
-              "outOfScope": false,
-              "hasOpenThreats": false,
-              "threats": []
-            }
+        "boundary": "Device ↔ Wireless Network",
+        "trust_level": "Untrusted",
+        "assumption": "Network may be hostile"
+      },
+      {
+        "boundary": "Wireless Network ↔ Internet",
+        "trust_level": "Untrusted",
+        "assumption": "Traffic may be intercepted"
+      },
+      {
+        "boundary": "Internet ↔ Cloud Identity Provider",
+        "trust_level": "Trusted",
+        "assumption": "TLS/HTTPS secured"
+      }
+    ],
+    
+    "attack_scenarios": [
+      {
+        "id": "AS-001",
+        "name": "Credential Harvesting via Wireless Phishing",
+        "steps": [
+          "User connects to untrusted Wi-Fi",
+          "Attacker presents fraudulent authentication portal",
+          "User submits credentials to fake portal",
+          "Attacker captures credentials",
+          "Attacker attempts real service login"
+        ],
+        "success_condition": "Credentials captured without user detection"
+      },
+      {
+        "id": "AS-002",
+        "name": "Account Takeover Attempt",
+        "steps": [
+          "Attacker uses stolen credentials",
+          "Attempts authentication to legitimate service",
+          "Bypasses MFA if possible",
+          "Gains unauthorized access",
+          "Exploits account privileges"
+        ],
+        "success_condition": "Unauthorized authentication successful"
+      }
+    ],
+    
+    "security_controls": {
+      "cryptographic_tool": "Multi-Factor Authentication (MFA / TOTP-based)",
+      "additional_tool": "Cloud Identity Conditional Access / IAM Policy Enforcement",
+      
+      "framework_principles": [
+        {
+          "principle": "Zero Trust",
+          "controls": [
+            "Continuous verification signals",
+            "Policy-driven access decisions",
+            "Network/location not trusted by default"
           ]
         },
-        "size": {
-          "height": 700,
-          "width": 950
+        {
+          "principle": "Encapsulation/Layering",
+          "controls": [
+            "TLS/HTTPS for authentication flow",
+            "MFA as additional layer",
+            "VPN over untrusted Wi-Fi (optional)"
+          ]
+        },
+        {
+          "principle": "Least Privilege",
+          "controls": [
+            "Role-based access control",
+            "Restricted session scopes",
+            "Minimal permissions"
+          ]
+        },
+        {
+          "principle": "Fail-safe Defaults + Usability",
+          "controls": [
+            "Default deny on failed verification",
+            "MFA fatigue mitigation",
+            "User-friendly security prompts"
+          ]
         }
+      ]
+    },
+    
+    "demonstration_components": {
+      "environment": {
+        "attacker": "Kali VM (simulation)",
+        "victim": "Separate browser/incognito",
+        "accounts": "Dummy Microsoft account with Authenticator MFA",
+        "ethics_boundaries": "Controlled lab environment only"
+      },
+      
+      "threat_demo": {
+        "scenario": "Credential harvesting over 'Untrusted Wi-Fi'",
+        "tools": "SET (Social Engineering Toolkit)",
+        "method": "Cloning legitimate-looking cloud login portal",
+        "output": "Terminal credential capture",
+        "limitation": "Modern OAuth flows resist simple cloning (as demonstrated)",
+        "key_finding": "Password-based authentication insufficient in hostile wireless environments"
+      },
+      
+      "defense_demo": {
+        "scenario": "Takeover attempt blocked",
+        "steps": [
+          "Attacker tries stolen credentials",
+          "MFA prompt appears",
+          "Without user device, authentication fails",
+          "Conditional access policies enforce verification"
+        ],
+        "effectiveness": "Takeover prevented despite credential theft"
       }
-    ]
-  },
-  "version": "2.0"
+    },
+    
+    "risk_assessment": {
+      "before_controls": {
+        "confidentiality": "High (credential exposure)",
+        "integrity": "High (unauthorized modifications)",
+        "availability": "Medium (potential account lockout)",
+        "overall_risk": "High"
+      },
+      "after_controls": {
+        "confidentiality": "Medium (theft possible, takeover prevented)",
+        "integrity": "Low (MFA blocks unauthorized changes)",
+        "availability": "Low (legitimate access maintained)",
+        "overall_risk": "Medium-Low"
+      }
+    },
+    
+    "evaluation_criteria": [
+      "Credential harvesting successful? (Yes/No)",
+      "Account takeover successful? (No, blocked by MFA)",
+      "Primary control effectiveness? (MFA + Conditional Access)",
+      "Residual risks? (MFA fatigue, session theft)",
+      "Usability impact? (Minimal with proper design)"
+    ],
+    
+    "limitations": [
+      "MFA fatigue and push approval risks",
+      "Users still susceptible to deception",
+      "Dependency on identity provider controls",
+      "Session token compromise possible",
+      "Device-level threats not addressed"
+    ],
+    
+    "legal_ethical_considerations": [
+      "Ethical use of phishing tools (lab only)",
+      "Dummy accounts exclusively",
+      "No real credential collection",
+      "No Wi-Fi cracking or MFA bypass attempts",
+      "No targeting real users"
+    ],
+    
+    "references": {
+      "minimum_required": 10,
+      "types": ["NIST", "Academic", "Cloud Documentation", "Industry Reports"],
+      "format": "IEEE"
+    }
+  }
 }
